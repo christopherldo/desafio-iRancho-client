@@ -107,12 +107,17 @@ export default {
           const response = await API.getAlocacoes({ q: this.q });
           this.animalXLoteArray = response.data.animalXLoteArray;
         } catch (e) {
-          if (e.response.data.error) {
-            for (let err in e.response.data.error) {
-              this.errors.push(e.response.data.error[err]);
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
             }
           } else {
-            this.errors.push(e);
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
           }
         }
 
@@ -151,10 +156,17 @@ export default {
                 title: "Oops...",
                 text: "Ocorreu um erro",
               });
-              if (e.response.data.error) {
-                for (let err in e.response.data.error) {
-                  this.errors.push(e.response.data.error[err]);
+              if (e.response) {
+                if (e.response.data.error) {
+                  for (let err in e.response.data.error) {
+                    this.errors.push(e.response.data.error[err]);
+                  }
                 }
+              } else {
+                const errorObject = {
+                  msg: e.message,
+                };
+                this.errors.push(errorObject);
               }
             }
           }

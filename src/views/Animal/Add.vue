@@ -1,5 +1,5 @@
 <template>
-  <main class="pessoa">
+  <main class="animal">
     <div class="container">
       <div class="top--actions">
         <router-link
@@ -51,6 +51,7 @@
               v-model="fk_id_pessoa"
               class="form-select form-control"
               aria-label="Default select example"
+              required
             >
               <option selected></option>
               <option
@@ -142,12 +143,17 @@ export default {
           const response = await API.getPessoas({ q: this.q });
           this.pessoaArray = response.data.pessoaArray;
         } catch (e) {
-          if (e.response.data.error) {
-            for (let err in e.response.data.error) {
-              this.errors.push(e.response.data.error[err]);
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
             }
           } else {
-            this.errors.push(e);
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
           }
         }
 
@@ -169,10 +175,17 @@ export default {
         });
         this.$router.push({ name: "Animal" });
       } catch (e) {
-        if (e.response.data.error) {
-          for (let err in e.response.data.error) {
-            this.errors.push(e.response.data.error[err]);
+        if (e.response) {
+          if (e.response.data.error) {
+            for (let err in e.response.data.error) {
+              this.errors.push(e.response.data.error[err]);
+            }
           }
+        } else {
+          const errorObject = {
+            msg: e.message,
+          };
+          this.errors.push(errorObject);
         }
       }
     },
@@ -184,7 +197,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pessoa {
+.animal {
   display: flex;
 
   .container {

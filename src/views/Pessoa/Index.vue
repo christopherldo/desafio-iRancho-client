@@ -107,12 +107,17 @@ export default {
           const response = await API.getPessoas({ q: this.q });
           this.pessoaArray = response.data.pessoaArray;
         } catch (e) {
-          if (e.response.data.error) {
-            for (let err in e.response.data.error) {
-              this.errors.push(e.response.data.error[err]);
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
             }
           } else {
-            this.errors.push(e);
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
           }
         }
 
@@ -127,12 +132,17 @@ export default {
         const response = await API.togglePessoaActive(id);
         this.pessoaArray[key].ic_ativo = response.data.pessoa.ic_ativo;
       } catch (e) {
-        if (e.response.data.error) {
-          for (let err in e.response.data.error) {
-            this.errors.push(e.response.data.error[err]);
+        if (e.response) {
+          if (e.response.data.error) {
+            for (let err in e.response.data.error) {
+              this.errors.push(e.response.data.error[err]);
+            }
           }
         } else {
-          this.errors.push(e);
+          const errorObject = {
+            msg: e.message,
+          };
+          this.errors.push(errorObject);
         }
       }
     },
@@ -166,10 +176,17 @@ export default {
                 title: "Oops...",
                 text: "Ocorreu um erro",
               });
-              if (e.response.data.error) {
-                for (let err in e.response.data.error) {
-                  this.errors.push(e.response.data.error[err]);
+              if (e.response) {
+                if (e.response.data.error) {
+                  for (let err in e.response.data.error) {
+                    this.errors.push(e.response.data.error[err]);
+                  }
                 }
+              } else {
+                const errorObject = {
+                  msg: e.message,
+                };
+                this.errors.push(errorObject);
               }
             }
           }

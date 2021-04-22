@@ -1,103 +1,97 @@
 <template>
-  <main class="pessoa">
+  <main class="alocacao">
     <div class="container">
       <div class="top--actions">
         <router-link
           class="button bg-primary text-light"
-          to="/pessoa"
+          to="/alocacao"
           title="Voltar para a Home"
         >
           <font-awesome-icon icon="angle-left" />
         </router-link>
-        <h1>Adicionar Pessoa</h1>
+        <h1>Alocar o Animal ao Lote</h1>
       </div>
       <ul v-if="errors.length > 0" class="alert alert-danger" role="alert">
         <div v-for="(error, key) in errors" v-bind:key="key">
           {{ error.msg }}
         </div>
       </ul>
-      <form v-on:submit.prevent="addPessoa">
+      <form v-on:submit.prevent="addAlocacao">
         <hr />
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="fk_id_animal">Animal:</label>
+            <select
+              v-model="fk_id_animal"
+              class="form-select form-control"
+              aria-label="Default select example"
+              required
+            >
+              <option selected></option>
+              <option
+                v-for="(animal, key) in animalArray"
+                v-bind:value="animal.id"
+                v-bind:key="key"
+              >
+                {{ animal.id }} - {{ animal.no_animal }}
+              </option>
+            </select>
+          </div>
+          <div class="col form-group">
+            <label for="fk_id_lote">Lote:</label>
+            <select
+              v-model="fk_id_lote"
+              class="form-select form-control"
+              aria-label="Default select example"
+              required
+            >
+              <option selected></option>
+              <option
+                v-for="(lote, key) in loteArray"
+                v-bind:value="lote.id"
+                v-bind:key="key"
+              >
+                {{ lote.id }} - {{ lote.no_lote }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="dt_entrada">Data de entrada:</label>
+            <input
+              v-model="dt_entrada"
+              required
+              type="date"
+              class="form-control"
+              id="dt_entrada"
+              name="dt_entrada"
+            />
+          </div>
+          <div class="col form-group">
+            <label for="dt_saida">Data de saída:</label>
+            <input
+              v-model="dt_saida"
+              required
+              type="date"
+              class="form-control"
+              id="dt_saida"
+              name="dt_saida"
+            />
+          </div>
+        </div>
         <div class="form-group form-check">
           <input
-            v-model="ic_ativo"
+            v-model="ic_bezerro"
             type="checkbox"
             class="form-check-input"
-            id="ic_ativo"
-            name="ic_ativo"
+            id="ic_bezerro"
+            name="ic_bezerro"
             checked
           />
-          <label class="form-check-label" for="ic_ativo">Ativo</label>
+          <label class="form-check-label" for="ic_bezerro">Bezerro</label>
         </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="no_pessoa">Nome:</label>
-            <input
-              v-model="no_pessoa"
-              required
-              type="text"
-              class="form-control"
-              id="no_pessoa"
-              name="no_pessoa"
-              placeholder="Insira o nome"
-            />
-          </div>
-          <div class="col form-group">
-            <label for="no_email">E-mail:</label>
-            <input
-              v-model="no_email"
-              required
-              type="email"
-              class="form-control"
-              id="no_email"
-              name="no_email"
-              placeholder="Insira o e-mail"
-            />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="endereco">Endereço:</label>
-            <input
-              v-model="endereco"
-              required
-              type="text"
-              class="form-control"
-              id="endereco"
-              name="endereco"
-              placeholder="Insira o endereço"
-            />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col-md-3">
-            <div class="form-check form-check-inline">
-              <input
-                v-model="sexo"
-                class="form-check-input"
-                type="radio"
-                name="sexo"
-                id="sexo-M"
-                value="M"
-                required
-              />
-              <label class="form-check-label" for="sexo-M"> Masculino </label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input
-                v-model="sexo"
-                class="form-check-input"
-                type="radio"
-                name="sexo"
-                id="sexo-F"
-                value="F"
-                required
-              />
-              <label class="form-check-label" for="sexo-F"> Feminimo </label>
-            </div>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Adicionar</button>
+        <button type="submit" class="btn btn-primary mt-3">Alocar</button>
       </form>
     </div>
   </main>
@@ -109,39 +103,102 @@ export default {
   data() {
     return {
       errors: [],
-      no_pessoa: "",
-      no_email: "",
-      endereco: "",
-      sexo: "",
-      ic_ativo: true,
+      animalArray: [],
+      loteArray: [],
+      fk_id_animal: "",
+      fk_id_lote: "",
+      dt_entrada: "",
+      dt_saida: "",
+      ic_bezerro: false,
+      getAnimaisList: async () => {
+        this.errors = [];
+        this.animalArray = [];
+        this.loading = true;
+
+        try {
+          const response = await API.getAnimais();
+          this.animalArray = response.data.animalArray;
+        } catch (e) {
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
+            }
+          } else {
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
+          }
+        }
+
+        this.loading = false;
+      },
+      getLotesList: async () => {
+        this.errors = [];
+        this.loteArray = [];
+        this.loading = true;
+
+        try {
+          const response = await API.getLotes();
+          this.loteArray = response.data.animalLoteArray;
+        } catch (e) {
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
+            }
+          } else {
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
+          }
+        }
+
+        this.loading = false;
+      },
     };
   },
   methods: {
-    async addPessoa() {
+    async addAlocacao() {
       this.errors = [];
       try {
-        await API.addPessoa({
-          no_pessoa: this.no_pessoa,
-          no_email: this.no_email,
-          endereco: this.endereco,
-          sexo: this.sexo,
-          ic_ativo: this.ic_ativo,
+        await API.addAlocacao({
+          fk_id_animal: this.fk_id_animal,
+          fk_id_lote: this.fk_id_lote,
+          dt_entrada: this.dt_entrada,
+          dt_saida: this.dt_saida,
+          ic_bezerro: this.ic_bezerro,
         });
-        this.$router.push({ name: "Pessoa" });
+        this.$router.push({ name: "Alocação" });
       } catch (e) {
-        if (e.response.data.error) {
-          for (let err in e.response.data.error) {
-            this.errors.push(e.response.data.error[err]);
+        if (e.response) {
+          if (e.response.data.error) {
+            for (let err in e.response.data.error) {
+              this.errors.push(e.response.data.error[err]);
+            }
           }
+        } else {
+          const errorObject = {
+            msg: e.message,
+          };
+          this.errors.push(errorObject);
         }
       }
     },
+  },
+  async mounted() {
+    await this.getAnimaisList();
+    await this.getLotesList();
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.pessoa {
+.alocacao {
   display: flex;
 
   .container {

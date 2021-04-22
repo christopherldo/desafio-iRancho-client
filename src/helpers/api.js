@@ -86,11 +86,17 @@ const API = {
   getLotes: async (options = {}) => {
     return await axiosGET("/lote", options);
   },
+  addLote: async (body) => {
+    return await axiosPOST("/lote", body);
+  },
   deleteLote: async (id) => {
     return await axiosDELETE(`/lote/${id}`);
   },
   getAlocacoes: async (options = {}) => {
     return await axiosGET("/animal-x-lote", options);
+  },
+  addAlocacao: async (body) => {
+    return await axiosPOST("/animal-x-lote/", body);
   },
   deleteAlocacao: async (id) => {
     return await axiosDELETE(`/animal-x-lote/${id}`);
