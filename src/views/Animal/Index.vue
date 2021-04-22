@@ -2,20 +2,22 @@
   <main class="animal">
     <div class="container">
       <div class="top--actions">
-        <router-link
-          class="button bg-warning text-dark"
-          to="/"
-          title="Voltar para a Home"
-        >
-          <font-awesome-icon icon="home" />
-        </router-link>
-        <router-link
-          class="button bg-success text-white"
-          to="/animal/add"
-          title="Adicionar animal"
-        >
-          <font-awesome-icon icon="plus" />
-        </router-link>
+        <div class="buttons-area">
+          <router-link
+            class="button bg-warning text-dark"
+            to="/"
+            title="Voltar para a Home"
+          >
+            <font-awesome-icon icon="home" />
+          </router-link>
+          <router-link
+            class="button bg-success text-white"
+            to="/animal/add"
+            title="Adicionar animal"
+          >
+            <font-awesome-icon icon="plus" />
+          </router-link>
+        </div>
         <h1>Lista de Animais</h1>
         <form>
           <div class="input-group mb-3">
@@ -35,51 +37,53 @@
         </div>
       </ul>
       <div v-if="loading" class="loading">Carregando...</div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Nome</th>
-            <th scope="col">Raça</th>
-            <th scope="col">Sexo</th>
-            <th scope="col">Massa</th>
-            <th scope="col">Idade</th>
-            <th scope="col">Dono</th>
-            <th scope="col" class="th-actions">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(animal, key) in animalArrayComputed" v-bind:key="key">
-            <th scope="row">{{ animal.id }}</th>
-            <td>{{ animal.no_animal }}</td>
-            <td>{{ animal.no_raca }}</td>
-            <td>{{ animal.sexo }}</td>
-            <td>{{ animal.vr_peso }}</td>
-            <td>{{ animal.idade }}</td>
-            <td>
-              <router-link v-bind:to="`/pessoa?q=${animal.pessoa.id}`">
-                {{ animal.pessoa.no_pessoa }}
-              </router-link>
-            </td>
-            <td class="td-actions">
-              <router-link
-                class="button bg-dark text-white"
-                v-bind:to="`/animal/edit/${animal.id}`"
-                v-bind:title="`Editar ${animal.no_animal}`"
-              >
-                <font-awesome-icon icon="pen" />
-              </router-link>
-              <a
-                class="button bg-dark"
-                v-on:click="deleteAnimal(animal.id, key)"
-                v-bind:title="`Apagar ${animal.no_animal}`"
-              >
-                <font-awesome-icon icon="trash" class="text-white" />
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nome</th>
+              <th scope="col">Raça</th>
+              <th scope="col">Sexo</th>
+              <th scope="col">Massa</th>
+              <th scope="col">Idade</th>
+              <th scope="col">Dono</th>
+              <th scope="col" class="th-actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(animal, key) in animalArrayComputed" v-bind:key="key">
+              <th scope="row">{{ animal.id }}</th>
+              <td>{{ animal.no_animal }}</td>
+              <td>{{ animal.no_raca }}</td>
+              <td>{{ animal.sexo }}</td>
+              <td>{{ animal.vr_peso }}</td>
+              <td>{{ animal.idade }}</td>
+              <td>
+                <router-link v-bind:to="`/pessoa?q=${animal.pessoa.id}`">
+                  {{ animal.pessoa.no_pessoa }}
+                </router-link>
+              </td>
+              <td class="td-actions">
+                <router-link
+                  class="button bg-dark text-white"
+                  v-bind:to="`/animal/edit/${animal.id}`"
+                  v-bind:title="`Editar ${animal.no_animal}`"
+                >
+                  <font-awesome-icon icon="pen" />
+                </router-link>
+                <a
+                  class="button bg-dark"
+                  v-on:click="deleteAnimal(animal.id, key)"
+                  v-bind:title="`Apagar ${animal.no_animal}`"
+                >
+                  <font-awesome-icon icon="trash" class="text-white" />
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </template>
@@ -203,76 +207,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.animal {
-  display: flex;
-
-  .container {
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-evenly;
-
-    .top--actions {
-      display: flex;
-
-      h1 {
-        margin: auto;
-        margin-top: 0;
-        font-size: 26px;
-        line-height: 50px;
-      }
-
-      .button {
-        height: 50px;
-        width: 50px;
-        line-height: 50px;
-        font-size: 25px;
-        margin: 0 10px 20px 0;
-      }
-
-      form {
-        margin-left: auto;
-        height: 50px;
-
-        .input-group,
-        input {
-          height: 100%;
-        }
-      }
-    }
-
-    .button {
-      display: block;
-      height: 40px;
-      width: 40px;
-      line-height: 40px;
-      text-align: center;
-      font-size: 20px;
-    }
-
-    th,
-    td {
-      padding-top: 0;
-      padding-bottom: 0;
-      height: 60px;
-      line-height: 60px;
-
-      &.th-actions {
-        width: 125px;
-      }
-
-      &.td-actions {
-        display: flex;
-        align-items: center;
-
-        a {
-          margin-right: 10px;
-          cursor: pointer;
-        }
-      }
-    }
-  }
-}
-</style>

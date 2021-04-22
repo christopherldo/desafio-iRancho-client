@@ -2,20 +2,22 @@
   <main class="pessoa">
     <div class="container">
       <div class="top--actions">
-        <router-link
-          class="button bg-warning text-dark"
-          to="/"
-          title="Voltar para a Home"
-        >
-          <font-awesome-icon icon="home" />
-        </router-link>
-        <router-link
-          class="button bg-success text-white"
-          to="/pessoa/add"
-          title="Adicionar pessoa"
-        >
-          <font-awesome-icon icon="plus" />
-        </router-link>
+        <div class="buttons-area">
+          <router-link
+            class="button bg-warning text-dark"
+            to="/"
+            title="Voltar para a Home"
+          >
+            <font-awesome-icon icon="home" />
+          </router-link>
+          <router-link
+            class="button bg-success text-white"
+            to="/pessoa/add"
+            title="Adicionar pessoa"
+          >
+            <font-awesome-icon icon="plus" />
+          </router-link>
+        </div>
         <h1>Lista de Pessoas</h1>
         <form>
           <div class="input-group mb-3">
@@ -35,56 +37,58 @@
         </div>
       </ul>
       <div v-if="loading" class="loading">Carregando...</div>
-      <table v-else class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Nome</th>
-            <th scope="col">E-mail</th>
-            <th scope="col" class="th-actions">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(pessoa, key) in pessoaArray" v-bind:key="key">
-            <th scope="row">{{ pessoa.id }}</th>
-            <td>{{ pessoa.no_pessoa }}</td>
-            <td>{{ pessoa.no_email }}</td>
-            <td class="td-actions">
-              <a
-                v-on:click="togglePessoaActive(pessoa.id, key)"
-                class="button bg-dark"
-                title="Ativar/Desativar"
-              >
-                <font-awesome-icon
-                  v-if="pessoa.ic_ativo"
-                  icon="power-off"
-                  class="text-white"
-                />
-                <font-awesome-icon
-                  v-else
-                  icon="power-off"
-                  class="text-secondary"
-                />
-              </a>
-              <router-link
-                class="button bg-dark text-white"
-                v-bind:to="`/pessoa/edit/${pessoa.id}`"
-                v-bind:title="`Editar ${pessoa.no_pessoa}`"
-              >
-                <font-awesome-icon icon="pen" />
-              </router-link>
-              <a
-                class="button bg-dark"
-                href="#"
-                v-on:click="deletePessoa(pessoa.id, key)"
-                v-bind:title="`Apagar ${pessoa.no_pessoa}`"
-              >
-                <font-awesome-icon icon="trash" class="text-white" />
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Nome</th>
+              <th scope="col">E-mail</th>
+              <th scope="col" class="th-actions">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(pessoa, key) in pessoaArray" v-bind:key="key">
+              <th scope="row">{{ pessoa.id }}</th>
+              <td>{{ pessoa.no_pessoa }}</td>
+              <td>{{ pessoa.no_email }}</td>
+              <td class="td-actions">
+                <a
+                  v-on:click="togglePessoaActive(pessoa.id, key)"
+                  class="button bg-dark"
+                  title="Ativar/Desativar"
+                >
+                  <font-awesome-icon
+                    v-if="pessoa.ic_ativo"
+                    icon="power-off"
+                    class="text-white"
+                  />
+                  <font-awesome-icon
+                    v-else
+                    icon="power-off"
+                    class="text-secondary"
+                  />
+                </a>
+                <router-link
+                  class="button bg-dark text-white"
+                  v-bind:to="`/pessoa/edit/${pessoa.id}`"
+                  v-bind:title="`Editar ${pessoa.no_pessoa}`"
+                >
+                  <font-awesome-icon icon="pen" />
+                </router-link>
+                <a
+                  class="button bg-dark"
+                  href="#"
+                  v-on:click="deletePessoa(pessoa.id, key)"
+                  v-bind:title="`Apagar ${pessoa.no_pessoa}`"
+                >
+                  <font-awesome-icon icon="trash" class="text-white" />
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </template>
@@ -217,76 +221,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.pessoa {
-  display: flex;
-
-  .container {
-    height: 100%;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-evenly;
-
-    .top--actions {
-      display: flex;
-
-      h1 {
-        margin: auto;
-        margin-top: 0;
-        font-size: 26px;
-        line-height: 50px;
-      }
-
-      .button {
-        height: 50px;
-        width: 50px;
-        line-height: 50px;
-        font-size: 25px;
-        margin: 0 10px 20px 0;
-      }
-
-      form {
-        margin-left: auto;
-        height: 50px;
-
-        .input-group,
-        input {
-          height: 100%;
-        }
-      }
-    }
-
-    .button {
-      display: block;
-      height: 40px;
-      width: 40px;
-      line-height: 40px;
-      text-align: center;
-      font-size: 20px;
-    }
-
-    th,
-    td {
-      padding-top: 0;
-      padding-bottom: 0;
-      height: 60px;
-      line-height: 60px;
-
-      &.th-actions {
-        width: 175px;
-      }
-
-      &.td-actions {
-        display: flex;
-        align-items: center;
-
-        a {
-          margin-right: 10px;
-          cursor: pointer;
-        }
-      }
-    }
-  }
-}
-</style>

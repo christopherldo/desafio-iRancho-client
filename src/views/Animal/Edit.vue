@@ -9,15 +9,16 @@
         >
           <font-awesome-icon icon="angle-left" />
         </router-link>
-        <h1>Adicionar Animal</h1>
+        <h1>Editar Animal</h1>
       </div>
       <ul v-if="errors.length > 0" class="alert alert-danger" role="alert">
         <div v-for="(error, key) in errors" v-bind:key="key">
           {{ error.msg }}
         </div>
       </ul>
-      <form v-on:submit.prevent="addAnimal">
+      <form v-on:submit.prevent="editAnimal">
         <hr />
+        <span>ID: {{ id }}</span>
         <div class="form-row">
           <div class="col form-group">
             <label for="no_animal">Nome:</label>
@@ -115,7 +116,7 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Adicionar</button>
+        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
       </form>
     </div>
   </main>
@@ -128,6 +129,7 @@ export default {
     return {
       errors: [],
       pessoaArray: [],
+      id: this.$route.params.id,
       fk_id_pessoa: "",
       no_animal: "",
       no_raca: "",
@@ -156,13 +158,39 @@ export default {
           }
         }
       },
+      getAnimalById: async () => {
+        this.errors = [];
+
+        try {
+          const response = await API.getAnimalById(this.id);
+          this.fk_id_pessoa = response.data.animal.fk_id_pessoa;
+          this.no_animal = response.data.animal.no_animal;
+          this.no_raca = response.data.animal.no_raca;
+          this.sexo = response.data.animal.sexo;
+          this.vr_peso = response.data.animal.vr_peso;
+          this.dt_nascimento = response.data.animal.dt_nascimento;
+        } catch (e) {
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
+            }
+          } else {
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
+          }
+        }
+      },
     };
   },
   methods: {
-    async addAnimal() {
+    async editAnimal() {
       this.errors = [];
       try {
-        await API.addAnimal({
+        await API.editAnimal(this.id, {
           fk_id_pessoa: this.fk_id_pessoa,
           no_animal: this.no_animal,
           no_raca: this.no_raca,
@@ -188,6 +216,7 @@ export default {
     },
   },
   async mounted() {
+    await this.getAnimalById();
     await this.getPessoasList();
   },
 };

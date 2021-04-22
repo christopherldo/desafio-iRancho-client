@@ -1,89 +1,72 @@
 <template>
-  <main class="animal">
+  <main class="pessoa">
     <div class="container">
       <div class="top--actions">
         <router-link
           class="button bg-primary text-light"
-          to="/animal"
+          to="/pessoa"
           title="Voltar para a Home"
         >
           <font-awesome-icon icon="angle-left" />
         </router-link>
-        <h1>Adicionar Animal</h1>
+        <h1>Editar Pessoa</h1>
       </div>
       <ul v-if="errors.length > 0" class="alert alert-danger" role="alert">
         <div v-for="(error, key) in errors" v-bind:key="key">
           {{ error.msg }}
         </div>
       </ul>
-      <form v-on:submit.prevent="addAnimal">
+      <form v-on:submit.prevent="editPessoa">
         <hr />
+        <span>ID: {{ id }}</span>
+        <div class="form-group form-check">
+          <input
+            v-model="ic_ativo"
+            type="checkbox"
+            class="form-check-input"
+            id="ic_ativo"
+            name="ic_ativo"
+            checked
+          />
+          <label class="form-check-label" for="ic_ativo">Ativo</label>
+        </div>
         <div class="form-row">
           <div class="col form-group">
-            <label for="no_animal">Nome:</label>
+            <label for="no_pessoa">Nome:</label>
             <input
-              v-model="no_animal"
+              v-model="no_pessoa"
               required
               type="text"
               class="form-control"
-              id="no_animal"
-              name="no_animal"
+              id="no_pessoa"
+              name="no_pessoa"
               placeholder="Insira o nome"
             />
           </div>
           <div class="col form-group">
-            <label for="no_raca">Raça:</label>
+            <label for="no_email">E-mail:</label>
             <input
-              v-model="no_raca"
+              v-model="no_email"
               required
-              type="text"
+              type="email"
               class="form-control"
-              id="no_raca"
-              name="no_raca"
-              placeholder="Insira a raça"
+              id="no_email"
+              name="no_email"
+              placeholder="Insira o e-mail"
             />
           </div>
         </div>
         <div class="form-row">
           <div class="col form-group">
-            <label for="no_raca">Dono:</label>
-            <select
-              v-model="fk_id_pessoa"
-              class="form-select form-control"
-              aria-label="Default select example"
-              required
-            >
-              <option selected></option>
-              <option
-                v-for="(pessoa, key) in pessoaArray"
-                v-bind:value="pessoa.id"
-                v-bind:key="key"
-              >
-                {{ pessoa.id }} - {{ pessoa.no_pessoa }}
-              </option>
-            </select>
-          </div>
-          <div class="col-md-3 form-group">
-            <label for="vr_peso">Massa (KG):</label>
+            <label for="endereco">Endereço:</label>
             <input
-              v-model="vr_peso"
+              v-model="endereco"
               required
-              type="number"
+              type="text"
               class="form-control"
-              id="vr_peso"
-              name="vr_peso"
-              placeholder="Insira o peso do animal"
-            />
-          </div>
-          <div class="col-md-3 form-group">
-            <label for="dt_nascimento">Data de nascimento:</label>
-            <input
-              v-model="dt_nascimento"
-              required
-              type="date"
-              class="form-control"
-              id="dt_nascimento"
-              name="dt_nascimento"
+              id="endereco"
+              name="endereco"
+              placeholder="Insira o endereço"
             />
           </div>
         </div>
@@ -115,7 +98,7 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Adicionar</button>
+        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
       </form>
     </div>
   </main>
@@ -127,20 +110,22 @@ export default {
   data() {
     return {
       errors: [],
-      pessoaArray: [],
-      fk_id_pessoa: "",
-      no_animal: "",
-      no_raca: "",
+      id: this.$route.params.id,
+      no_pessoa: "",
+      no_email: "",
+      endereco: "",
       sexo: "",
-      vr_peso: "",
-      dt_nascimento: "",
-      getPessoasList: async () => {
+      ic_ativo: true,
+      getPessoaById: async () => {
         this.errors = [];
-        this.pessoaArray = [];
 
         try {
-          const response = await API.getPessoas({ q: this.q });
-          this.pessoaArray = response.data.pessoaArray;
+          const response = await API.getPessoaById(this.id);
+          this.no_pessoa = response.data.pessoa.no_pessoa;
+          this.no_email = response.data.pessoa.no_email;
+          this.endereco = response.data.pessoa.endereco;
+          this.sexo = response.data.pessoa.sexo;
+          this.ic_ativo = response.data.pessoa.ic_ativo;
         } catch (e) {
           if (e.response) {
             if (e.response.data.error) {
@@ -159,18 +144,17 @@ export default {
     };
   },
   methods: {
-    async addAnimal() {
+    async editPessoa() {
       this.errors = [];
       try {
-        await API.addAnimal({
-          fk_id_pessoa: this.fk_id_pessoa,
-          no_animal: this.no_animal,
-          no_raca: this.no_raca,
+        await API.editPessoa(this.id, {
+          no_pessoa: this.no_pessoa,
+          no_email: this.no_email,
+          endereco: this.endereco,
           sexo: this.sexo,
-          vr_peso: this.vr_peso,
-          dt_nascimento: this.dt_nascimento,
+          ic_ativo: this.ic_ativo,
         });
-        this.$router.push({ name: "Animal" });
+        this.$router.push({ name: "Pessoa" });
       } catch (e) {
         if (e.response) {
           if (e.response.data.error) {
@@ -188,13 +172,13 @@ export default {
     },
   },
   async mounted() {
-    await this.getPessoasList();
+    await this.getPessoaById();
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.animal {
+.pessoa {
   display: flex;
 
   .container {

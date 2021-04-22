@@ -9,15 +9,16 @@
         >
           <font-awesome-icon icon="angle-left" />
         </router-link>
-        <h1>Alocar o Animal ao Lote</h1>
+        <h1>Editar Alocação</h1>
       </div>
       <ul v-if="errors.length > 0" class="alert alert-danger" role="alert">
         <div v-for="(error, key) in errors" v-bind:key="key">
           {{ error.msg }}
         </div>
       </ul>
-      <form v-on:submit.prevent="addAlocacao">
+      <form v-on:submit.prevent="editAlocacao">
         <hr />
+        <span>ID: {{ id }}</span>
         <div class="form-row">
           <div class="col form-group">
             <label for="fk_id_animal">Animal:</label>
@@ -25,7 +26,7 @@
               v-model="fk_id_animal"
               class="form-select form-control"
               aria-label="Default select example"
-              required
+              disabled
             >
               <option selected></option>
               <option
@@ -43,7 +44,7 @@
               v-model="fk_id_lote"
               class="form-select form-control"
               aria-label="Default select example"
-              required
+              disabled
             >
               <option selected></option>
               <option
@@ -91,7 +92,7 @@
           />
           <label class="form-check-label" for="ic_bezerro">Bezerro</label>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Alocar</button>
+        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
       </form>
     </div>
   </main>
@@ -103,6 +104,7 @@ export default {
   data() {
     return {
       errors: [],
+      id: this.$route.params.id,
       animalArray: [],
       loteArray: [],
       fk_id_animal: "",
@@ -115,8 +117,8 @@ export default {
         this.animalArray = [];
 
         try {
-          const response = await API.getAnimais();
-          this.animalArray = response.data.animalArray;
+          const response = await API.getAnimalById(this.fk_id_animal);
+          this.animalArray.push(response.data.animal);
         } catch (e) {
           if (e.response) {
             if (e.response.data.error) {
@@ -137,8 +139,33 @@ export default {
         this.loteArray = [];
 
         try {
-          const response = await API.getLotes();
-          this.loteArray = response.data.animalLoteArray;
+          const response = await API.getLoteById(this.fk_id_lote);
+          this.loteArray.push(response.data.animalLote);
+        } catch (e) {
+          if (e.response) {
+            if (e.response.data.error) {
+              for (let err in e.response.data.error) {
+                this.errors.push(e.response.data.error[err]);
+              }
+            }
+          } else {
+            const errorObject = {
+              msg: e.message,
+            };
+            this.errors.push(errorObject);
+          }
+        }
+      },
+      getAlocacaoById: async () => {
+        this.errors = [];
+
+        try {
+          const response = await API.getAlocacaoById(this.id);
+          this.fk_id_animal = response.data.animalXLote.fk_id_animal;
+          this.fk_id_lote = response.data.animalXLote.fk_id_lote;
+          this.dt_entrada = response.data.animalXLote.dt_entrada;
+          this.dt_saida = response.data.animalXLote.dt_saida;
+          this.ic_bezerro = response.data.animalXLote.ic_bezerro;
         } catch (e) {
           if (e.response) {
             if (e.response.data.error) {
@@ -157,10 +184,10 @@ export default {
     };
   },
   methods: {
-    async addAlocacao() {
+    async editAlocacao() {
       this.errors = [];
       try {
-        await API.addAlocacao({
+        await API.editAlocacao(this.id, {
           fk_id_animal: this.fk_id_animal,
           fk_id_lote: this.fk_id_lote,
           dt_entrada: this.dt_entrada,
@@ -185,6 +212,7 @@ export default {
     },
   },
   async mounted() {
+    await this.getAlocacaoById();
     await this.getAnimaisList();
     await this.getLotesList();
   },
